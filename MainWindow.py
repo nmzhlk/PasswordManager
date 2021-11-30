@@ -6,7 +6,6 @@ from cryptography.fernet import Fernet  # Для шифрования парол
 from dotenv import load_dotenv
 
 from DataAdditionDialog import DataAdditionDialog as data_dialog
-from AuthorizationDialog import AuthorizationDialog as authorize
 
 load_dotenv()  # Токен шифрования
 
@@ -81,7 +80,7 @@ class MainWindow(object):
         self.password_line.setFont(font)
         self.password_line.setObjectName("password_line")
         self.add_data_button = QtWidgets.QPushButton(MainWindow)
-        self.add_data_button.setGeometry(QtCore.QRect(250, 550, 140, 40))
+        self.add_data_button.setGeometry(QtCore.QRect(480, 545, 140, 40))
         font = QtGui.QFont()
         font.setFamily("Segoe UI")
         font.setPointSize(10)
@@ -93,13 +92,19 @@ class MainWindow(object):
         font.setFamily("Segoe UI")
         font.setPointSize(9)
         self.update_data_button.setFont(font)
-        self.update_data_button.setObjectName("add_data_button_2")
-
-        self.launch_authorization()
+        self.update_data_button.setObjectName("update_data_button")
+        self.edit_data_button = QtWidgets.QPushButton(MainWindow)
+        self.edit_data_button.setGeometry(QtCore.QRect(20, 545, 140, 40))
+        font = QtGui.QFont()
+        font.setFamily("Segoe UI")
+        font.setPointSize(10)
+        self.edit_data_button.setFont(font)
+        self.edit_data_button.setObjectName("edit_data_button")
 
         self.add_data_button.clicked.connect(self.data_dialog)
         self.services_widget.itemDoubleClicked.connect(self.show_data)
         self.update_data_button.clicked.connect(self.services_widget_data)
+        self.edit_data_button.clicked.connect(self.data_edit)
         self.services_widget_data()
 
         self.retranslateUi(MainWindow)
@@ -116,12 +121,7 @@ class MainWindow(object):
         self.title_label.setText(_translate("MainWindow", "Менеджер паролей"))
         self.add_data_button.setText(_translate("MainWindow", "Добавить данные"))
         self.update_data_button.setText(_translate("MainWindow", "Обновить данные"))
-
-    def launch_authorization(self):
-        dialog = QtWidgets.QDialog()
-        ui = authorize()
-        ui.setupUi(dialog)
-        dialog.exec()
+        self.edit_data_button.setText(_translate("MainWindow", "Изменить данные"))
 
     def data_dialog(self):
         dialog = QtWidgets.QDialog()
@@ -132,8 +132,8 @@ class MainWindow(object):
     def current_account(self):
         cur.execute("SELECT username FROM Logs")
         accounts_list = cur.fetchall()
-        logged_account = accounts_list[len(accounts_list) - 1][0]
-        return logged_account
+        self.logged_account = accounts_list[len(accounts_list) - 1][0]
+        return self.logged_account
 
     def services_widget_data(self):
         self.services_widget.clear()
@@ -150,12 +150,12 @@ class MainWindow(object):
         self.services_widget.addItems(shown_services)
 
     def show_data(self, item):
-        chosen_service = item.text()
+        self.chosen_service = item.text()
         current_account = self.current_account()
         cur.execute(
             "SELECT service_username, service_password FROM Data "
             "WHERE username = ? AND service_name = ?",
-            (current_account, chosen_service))
+            (current_account, self.chosen_service))
         data = cur.fetchone()
 
         key = os.getenv('KEY')
@@ -163,3 +163,15 @@ class MainWindow(object):
         decrypted_password = fernet.decrypt(data[1]).decode()
         self.username_line.setText(data[0])
         self.password_line.setText(decrypted_password)
+
+    def data_edit(self):
+        service_password = self.password_line.text()
+        service_username = self.username_line.text()
+        key = os.getenv('KEY')
+        fernet = Fernet(key)
+        encrypted_password = fernet.encrypt(service_password.encode())
+        cur.execute(
+            "UPDATE Data SET service_username = ?, service_password = ? "
+            "WHERE service_name = ? AND username = ?",
+            (service_username, encrypted_password, self.chosen_service, self.logged_account))
+        con.commit()

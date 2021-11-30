@@ -4,7 +4,7 @@ import sys
 from PyQt5 import QtWidgets, QtGui
 from dotenv import load_dotenv
 
-from MainWindow import MainWindow as StarterWindow
+from AuthorizationDialog import AuthorizationDialog as StarterWindow
 
 load_dotenv()  # Токен шифрования
 

@@ -6,7 +6,7 @@ from cryptography.fernet import Fernet  # Для шифрования парол
 from dotenv import load_dotenv
 
 from AccountCreationDialog import AccountCreationDialog as creator
-# from MainWindow import MainWindow as main
+from MainWindow import MainWindow as main
 
 load_dotenv()  # Токен шифрования
 
@@ -112,11 +112,11 @@ class AuthorizationDialog(QtWidgets.QDialog):
         else:
             cur.execute("INSERT INTO Logs VALUES (?)", (self.username_edit.text(),))
             con.commit()
-            self.login_button.setText('Вход выполнен. Закройте это окно')
-            # window = QtWidgets.QDialog()
-            # ui = main()
-            # ui.setupUi(window)
-            # window.exec()
+            self.login_button.setText('Вход выполнен')
+            window = QtWidgets.QDialog()
+            ui = main()
+            ui.setupUi(window)
+            window.exec()
 
     def username_checker(self):
         cur.execute("SELECT username FROM Accounts")
