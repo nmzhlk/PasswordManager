@@ -6,6 +6,7 @@ from cryptography.fernet import Fernet  # Для шифрования парол
 from dotenv import load_dotenv
 
 from DataAdditionDialog import DataAdditionDialog as data_dialog
+from AuthorizationDialog import AuthorizationDialog as authorize
 
 load_dotenv()  # Токен шифрования
 
@@ -44,7 +45,7 @@ class MainWindow(object):
         self.username_label.setFont(font)
         self.username_label.setObjectName("username_label")
         self.services_guide = QtWidgets.QLabel(MainWindow)
-        self.services_guide.setGeometry(QtCore.QRect(20, 300, 600, 15))
+        self.services_guide.setGeometry(QtCore.QRect(20, 305, 600, 15))
         font = QtGui.QFont()
         font.setFamily("Segoe UI")
         font.setPointSize(9)
@@ -86,25 +87,41 @@ class MainWindow(object):
         font.setPointSize(10)
         self.add_data_button.setFont(font)
         self.add_data_button.setObjectName("add_data_button")
+        self.update_data_button = QtWidgets.QPushButton(MainWindow)
+        self.update_data_button.setGeometry(QtCore.QRect(440, 300, 180, 30))
+        font = QtGui.QFont()
+        font.setFamily("Segoe UI")
+        font.setPointSize(9)
+        self.update_data_button.setFont(font)
+        self.update_data_button.setObjectName("add_data_button_2")
+
+        self.launch_authorization()
+
+        self.add_data_button.clicked.connect(self.data_dialog)
+        self.services_widget.itemDoubleClicked.connect(self.show_data)
+        self.update_data_button.clicked.connect(self.services_widget_data)
+        self.services_widget_data()
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-        self.add_data_button.clicked.connect(self.data_dialog)
-        self.services_widget.itemDoubleClicked.connect(self.show_data)
-        self.services_widget_data()
-
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Dialog"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Менеджер паролей"))
         self.password_label.setText(_translate("MainWindow", "Пароль"))
         self.username_label.setText(_translate("MainWindow", "Имя пользователя"))
         self.services_guide.setText(
-            _translate("MainWindow",
-                       "Для обновления данных после их добавления — перезапустите главное окно"))
+            _translate("MainWindow", "Выберите сервис, чтобы просмотреть данные для входа"))
         self.services_label.setText(_translate("MainWindow", "Сервисы с сохранёнными данными"))
         self.title_label.setText(_translate("MainWindow", "Менеджер паролей"))
         self.add_data_button.setText(_translate("MainWindow", "Добавить данные"))
+        self.update_data_button.setText(_translate("MainWindow", "Обновить данные"))
+
+    def launch_authorization(self):
+        dialog = QtWidgets.QDialog()
+        ui = authorize()
+        ui.setupUi(dialog)
+        dialog.exec()
 
     def data_dialog(self):
         dialog = QtWidgets.QDialog()

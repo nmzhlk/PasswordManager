@@ -12,7 +12,7 @@ con = sqlite3.connect('passwords.db')
 cur = con.cursor()
 
 
-class AccountCreationDialog(object):
+class AccountCreationDialog(QtWidgets.QDialog):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(400, 350)
