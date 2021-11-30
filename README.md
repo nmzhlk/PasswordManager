@@ -16,13 +16,13 @@
 ### Интерфейсы:
 
 * Авторизация с существующим аккаунтом
-![Authorization](pics/1.png)
+* * ![Authorization](pics/1.png)
 * Создание нового аккаунта
-![NewAccount](pics/2.png)
+* * ![NewAccount](pics/2.png)
 * Основное окно с данными
-![MainWindow](pics/3.png)
+* * ![MainWindow](pics/3.png)
 * Диалог добавления данных от сервисов
-![AddData](pics/4.png)
+* * ![AddData](pics/4.png)
 
 ### База данных:
 
